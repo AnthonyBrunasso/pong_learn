@@ -1,8 +1,10 @@
 #include <iostream>
-#include <SDL.h>
-#include <windows.h>
+#include <chrono>
 
-INT WinMain(HINSTANCE, HINSTANCE, PSTR, INT) {
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+
+int main(int argc, char* argv[]) {
 
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -25,6 +27,9 @@ INT WinMain(HINSTANCE, HINSTANCE, PSTR, INT) {
         return 1;
     }
 
+    double t = 0.0;
+    auto current = std::chrono::system_clock::now();
+
     SDL_Event e;
     while (true) {
         while (SDL_PollEvent(&e)) {
@@ -34,7 +39,14 @@ INT WinMain(HINSTANCE, HINSTANCE, PSTR, INT) {
             }
         }
 
+        auto new_time = std::chrono::system_clock::now();
+        auto frame_time = new_time - current;
+        current = new_time;
+
         SDL_RenderClear(renderer);
+
+        std::cout << "frame_time: " << frame_time.count() << std::endl;
+        t += frame_time.count();
 
         SDL_RenderPresent(renderer);
     }
