@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <cmath>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -48,7 +49,7 @@ void update_simulation(SDL_Rect& p1, SDL_Rect& p2, SDL_Rect& pong, float& xv, fl
         y_valid = pong.y;
     }
 
-    std::cout << dt * xv << std::endl;
+    //std::cout << dt * xv << std::endl;
 
     pong.x += dt * xv;
     pong.y += dt * yv;
@@ -76,7 +77,12 @@ int main(int argc, char* argv[]) {
     }
 
     double t = 0.0;
-    auto current = std::chrono::system_clock::now().time_since_epoch();
+    double dt = 1.0;
+    double acc = 0.0;
+
+    typedef std::chrono::duration<double> dsec;
+
+    auto current = std::chrono::system_clock::now();
 
     SDL_Rect p1; p1.x = 0; p1.y = WINDOW_HEIGHT / 2 - PADDLE_HEIGHT; p1.w = PADDLE_WIDTH; p1.h = PADDLE_HEIGHT;
     SDL_Rect p2; p2.x = WINDOW_WIDTH - PADDLE_WIDTH; p2.y = WINDOW_HEIGHT / 2 - PADDLE_HEIGHT; p2.w = PADDLE_WIDTH; p2.h = PADDLE_HEIGHT;
@@ -96,15 +102,20 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        auto new_time = std::chrono::system_clock::now().time_since_epoch();
-        double frame_time = (new_time.count() - current.count()) / 100000.0;
+        auto new_time = std::chrono::system_clock::now();
+        dsec frame_time = new_time - current;
         current = new_time;
+
+        acc += frame_time.count() * 100;
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        update_simulation(p1, p2, pong, xv, yv, frame_time);
-        t += frame_time;
+        while (acc >= dt) {
+            update_simulation(p1, p2, pong, xv, yv, dt);
+            acc -= dt;
+            t += dt;
+        }
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
         SDL_RenderFillRect(renderer, &p1);

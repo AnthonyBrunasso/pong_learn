@@ -4,5 +4,6 @@ project (pong_learn)
 
 add_subdirectory("contrib/SDL-mirror")
 
+set(CMAKE_CXX_STANDARD 11)
 include_directories("include")
 add_subdirectory("src")
