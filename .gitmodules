@@ -1,3 +1,6 @@
 [submodule "contrib/SDL-mirror"]
 	path = contrib/SDL-mirror
 	url = https://github.com/spurious/SDL-mirror.git
+[submodule "contrib/nn_cpp"]
+	path = contrib/nn_cpp
+	url = git@github.com:AnthonyBrunasso/nn_cpp.git
